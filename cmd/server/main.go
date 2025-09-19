@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/AttendEase-ERP/erp-backend/internal/auth"
@@ -34,11 +33,9 @@ func main() {
 func authHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	claims, err := auth.GetUserEmail(r.Context())
 	if err != nil {
-		fmt.Println(claims)
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	fmt.Println(claims)
 	w.Write([]byte(claims))
 }

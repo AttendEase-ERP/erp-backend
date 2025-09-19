@@ -18,8 +18,6 @@ func RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handler := clerkhttp.WithHeaderAuthorization()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, ok := clerk.SessionClaimsFromContext(r.Context())
-			// usr, err := user.Get(r.Context(), claims.Subject)
-
 			if !ok {
 				http.Error(w, "unauthorized", http.StatusUnauthorized)
 				return

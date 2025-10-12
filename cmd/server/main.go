@@ -21,6 +21,9 @@ func main() {
 	// connect to db
 	db.InitDB(cfg.DatabaseURL)
 
+	// close connection to db
+	defer db.CloseDB()
+
 	// setup router
 	r := router.NewRouter()
 

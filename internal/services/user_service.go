@@ -7,6 +7,6 @@ import (
 	"github.com/AttendEase-ERP/erp-backend/internal/repository"
 )
 
-func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
-	return repository.GetUserByEmail(ctx, email)
+func GetUserByEmail(ctx context.Context, email string) (*models.UserDetails, error) {
+	return repository.GetUserDetailsByEmail(ctx, email)
 }

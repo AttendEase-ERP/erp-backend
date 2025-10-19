@@ -7,7 +7,7 @@ import (
 	"github.com/AttendEase-ERP/erp-backend/internal/services"
 )
 
-func GetUserRole(w http.ResponseWriter, r *http.Request) {
+func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 	email := r.URL.Query().Get("email")
 	if email == "" {
 		http.Error(w, "email is required", http.StatusBadRequest)
@@ -20,7 +20,30 @@ func GetUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"role": user.Role,
-	})
+	response := map[string]any{
+		"email": user.Email,
+		"role":  user.Role.Role,
+		"name":  user.Name,
+	}
+
+	switch user.Role.Role {
+	case "teacher":
+		response["section"] = user.Section
+		response["subject"] = user.Subject
+		response["course_name"] = user.CourseName
+		response["course_duration"] = user.CourseDuration
+
+	case "student":
+		response["section"] = user.Section
+		response["semester"] = user.Semester
+		response["enrollment_number"] = user.EnrollmentNumber
+		response["course_name"] = user.CourseName
+
+	case "admin":
+		response["course_name"] = user.CourseName
+		response["course_duration"] = user.CourseDuration
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }

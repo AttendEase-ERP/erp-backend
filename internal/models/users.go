@@ -8,7 +8,7 @@ type UserDetails struct {
 	Email            string   `json:"email"`
 	Role             UserRole `json:"role"`
 	Name             string   `json:"name"`
-	Section          string   `json:"section"`
+	Section          []string `json:"section"`
 	Subject          string   `json:"subject"`
 	Semester         string   `json:"semester"`
 	CourseName       string   `json:"course_name"`

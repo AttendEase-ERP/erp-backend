@@ -34,19 +34,47 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.UserDetai
 			s.section_name, 
 			sub.subject_name,
 			sub.semester,
-			course.course_name,
-			course.course_duration
+			c.course_name,
+			c.course_duration
 		FROM "Teachers" t
 		LEFT JOIN "TeacherSectionAssignment" tsa ON t.id = tsa.teacher_id
 		LEFT JOIN "Sections" s ON tsa.section_id = s.id
 		LEFT JOIN "Subjects" sub ON tsa.subject_id = sub.id
-		LEFT JOIN "courses" course ON s.course_id = course.id
+		LEFT JOIN "courses" c ON s.course_id = c.id
 		WHERE t.email ILIKE $1
 	`
-		err = db.Pool.QueryRow(ctx, query, "%"+email+"%").Scan(&u.Name, &u.Section, &u.Subject, &u.Semester, &u.CourseName, &u.CourseDuration)
+		rows, err := db.Pool.Query(ctx, query, "%"+email+"%")
 		if err != nil {
-			logger.Log.Error().Err(err).Msg("error fetching teacher details")
+			logger.Log.Error().Err(err).Msg("error executing query for teacher details")
 			return nil, err
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var (
+				name           string
+				section        string
+				subject        string
+				semester       string
+				courseName     string
+				courseDuration string
+			)
+
+			err := rows.Scan(&name, &section, &subject, &semester, &courseName, &courseDuration)
+			if err != nil {
+				logger.Log.Error().Err(err).Msg("error scanning teacher details")
+				return nil, err
+			}
+
+			u.Name = name
+			u.Subject = subject
+			u.Semester = semester
+			u.CourseName = courseName
+			u.CourseDuration = courseDuration
+
+			if section != "" {
+				u.Section = append(u.Section, section)
+			}
 		}
 
 	case "student":

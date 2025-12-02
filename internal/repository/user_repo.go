@@ -30,8 +30,8 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.UserDetai
 	case "teacher":
 		query := `
 		SELECT 
-			t.name, 
-			s.section_name, 
+			t.name,
+			s.section_name,
 			sub.subject_name,
 			sub.semester,
 			c.course_name,
@@ -106,5 +106,6 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.UserDetai
 		return nil, fmt.Errorf("unknown role: %s", role)
 	}
 
+	fmt.Println(u)
 	return u, nil
 }

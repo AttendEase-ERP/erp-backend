@@ -32,10 +32,11 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		response["subject"] = user.Subject
 		response["course_name"] = user.CourseName
 		response["course_duration"] = user.CourseDuration
+		response["Semester"] = user.Semester
 
 	case "student":
 		response["section"] = user.Section
-		response["semester"] = user.Semester
+		response["Semester"] = user.Semester
 		response["enrollment_number"] = user.EnrollmentNumber
 		response["course_name"] = user.CourseName
 

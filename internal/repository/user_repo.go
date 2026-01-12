@@ -109,3 +109,37 @@ func GetUserDetailsByEmail(ctx context.Context, email string) (*models.UserDetai
 	fmt.Println(u)
 	return u, nil
 }
+
+func GetStudentsOfTeacher(ctx context.Context, semester string, section string, date string) ([]models.StudentsAttendanceList, error) {
+	query := `
+		SELECT 
+			st.id,
+			st.name,
+			st.email,
+			st.enrollment_number,
+			COALESCE(at.status, 'absent') AS status
+		FROM "Students" st
+		JOIN "Sections" sec ON st.section_id = sec.id
+		LEFT JOIN "Attendance" at ON st.id = at.student_id AND at.date = $3
+		WHERE sec.section_name = $1 AND st.current_semester = $2
+	`
+	rows, err := db.Pool.Query(ctx, query, section, semester, date)
+	if err != nil {
+		logger.Log.Error().Err(err).Msg("error executing query for students of teacher")
+		return nil, err
+	}
+	defer rows.Close()
+
+	students := make([]models.StudentsAttendanceList, 0)
+	for rows.Next() {
+		var student models.StudentsAttendanceList
+		err := rows.Scan(&student.ID, &student.Name, &student.Email, &student.EnrollmentNumber, &student.Status)
+		if err != nil {
+			logger.Log.Error().Err(err).Msg("error scanning student details")
+			return nil, err
+		}
+		students = append(students, student)
+	}
+
+	return students, nil
+}

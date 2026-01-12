@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/AttendEase-ERP/erp-backend/internal/services"
+	"github.com/AttendEase-ERP/erp-backend/internal/repository"
 )
 
 func GetUserDetails(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +14,7 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := services.GetUserByEmail(r.Context(), email)
+	user, err := repository.GetUserDetailsByEmail(r.Context(), email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -47,4 +47,24 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func GetStudentsOfTeacher(w http.ResponseWriter, r *http.Request) {
+	semester := r.URL.Query().Get("semester")
+	section := r.URL.Query().Get("section")
+	date := r.URL.Query().Get("date")
+
+	if semester == "" || section == "" {
+		http.Error(w, "semester and section are required", http.StatusBadRequest)
+		return
+	}
+
+	students, err := repository.GetStudentsOfTeacher(r.Context(), semester, section, date)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(students)
 }

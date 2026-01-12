@@ -21,6 +21,7 @@ func NewRouter() *chi.Mux {
 	r.Use(auth.RequireAuth)
 
 	r.Get("/fetch-user-details", handlers.GetUserDetails)
+	r.Get("/fetch-teacher-students", handlers.GetStudentsOfTeacher)
 
 	return r
 }
